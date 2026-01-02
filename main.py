@@ -1,69 +1,110 @@
 # PLIK: main.py
-# SYSTEM EXOMIND v2.0 (Core Logic)
+# SYSTEM EXOMIND v3.0 (ULTIMATE DATABASE)
 
 import time
 from datetime import datetime
-from actuators import BioInterface  # Nerwy
-from cortex import Brain            # Mózg Offline (Domyślny)
-# from cortex_ai import Brain       # Odkomentuj, by użyć AI
+from actuators import BioInterface
+from cortex import Brain
 
-PLIK_PAMIECI = "bio_history.csv"
+PLIK_PAMIECI = "bio_history_ultimate.csv" # Nowa, potężna baza
 
-print("--- 🧬 SYSTEM EXOMIND V2.0 ONLINE 🧬 ---")
+print("--- 🧬 EXOMIND v3.0 ULTIMATE ONLINE 🧬 ---")
 
-# Inicjalizacja modułów
 interfejs = BioInterface()
 mozg = Brain()
 
-# Inicjalizacja Pamięci
+# 1. DEFINICJA STRUKTURY DANYCH (Wszystkie parametry Samsunga + Lab)
+NAGLOWKI = [
+    "DATA", "GODZINA", "FAZA", "TETNO", "STATUS", 
+    "ENERGIA_SCORE", "SEN_H", "STRES_LVL", "KROKI", 
+    "CUKIER", "CISNIENIE", "SPO2", "NASTROJ", 
+    "LAB_WIT_D3", "LAB_KORTYZOL", "SUPLEMENTACJA"
+]
+
+# Tworzenie pliku z nowymi nagłówkami
 try:
     with open(PLIK_PAMIECI, "x") as f:
-        f.write("DATA,GODZINA,FAZA,TETNO,STATUS\n")
+        f.write(",".join(NAGLOWKI) + "\n")
 except FileExistsError:
     pass 
 
+def pobierz_input(tekst, domyslny="-"):
+    """Pomocnik do zbierania danych opcjonalnych"""
+    val = input(f">> {tekst} (Enter by pominąć): ")
+    return val if val else domyslny
+
 while True:
-    print("\n" + "="*30)
+    print("\n" + "="*40)
+    print("WYBIERZ TRYB OPERACYJNY:")
+    print("1. ⚡ SZYBKI SKAN (Tylko Tętno)")
+    print("2. 🌅 RAPORT PORANNY (Sen, Energia, Stres)")
+    print("3. 🧪 WYNIKI LABORATORYJNE (Krew, Hormony)")
+    print("q. WYJŚCIE")
     
-    # 1. Zegar Biologiczny
-    teraz = datetime.now()
-    data_str = teraz.strftime("%Y-%m-%d")
-    godz_str = teraz.strftime("%H:%M:%S")
-    godzina = teraz.hour
-    
-    if 6 <= godzina < 12: faza = "MORNING"
-    elif 12 <= godzina < 18: faza = "WORK"
-    elif 18 <= godzina < 22: faza = "RECOVERY"
-    else: faza = "SLEEP"
-
-    print(f"[ZEGAR] {godz_str} | FAZA: {faza}")
-
-    # 2. Input
     try:
-        wejscie = input(">> Podaj tętno (lub 'q'): ")
-        if wejscie.lower() == 'q': 
-            print("Zamykanie systemu...")
-            break
-        tetno = int(wejscie)
-    except ValueError:
-        print("❌ Błąd: Wpisz liczbę!")
-        continue
+        wybor = input("\n[WYBÓR] >> ")
+        
+        if wybor == 'q': break
+        
+        # Zmienne tymczasowe (resetujemy je)
+        dane = {k: "-" for k in NAGLOWKI}
+        
+        # Czas
+        teraz = datetime.now()
+        dane["DATA"] = teraz.strftime("%Y-%m-%d")
+        dane["GODZINA"] = teraz.strftime("%H:%M:%S")
+        godzina = teraz.hour
+        
+        if 6 <= godzina < 12: faza = "MORNING"
+        elif 12 <= godzina < 18: faza = "WORK"
+        elif 18 <= godzina < 22: faza = "RECOVERY"
+        else: faza = "SLEEP"
+        dane["FAZA"] = faza
 
-    # 3. Analiza (Cortex)
-    prefix_statusu, porada = mozg.analizuj(tetno, faza)
+        # --- LOGIKA TRYBÓW ---
+        
+        if wybor == "1": # SZYBKI
+            t_str = input(">> Tętno (BPM): ")
+            dane["TETNO"] = t_str
+            # Szybka analiza Cortexe
+            if t_str.isdigit():
+                _, rada = mozg.analizuj(int(t_str), faza)
+                print(f"💡 CORTEX: {rada}")
+                dane["STATUS"] = "QUICK_CHECK"
 
-    if prefix_statusu:
-        print(f"💡 CORTEX: {porada}")
-        interfejs.send_alert(porada)
-        komunikat = prefix_statusu
-    else:
-        print("ℹ️ Parametry stabilne.")
-        komunikat = "NORMA"
+        elif wybor == "2": # PORANNY (Samsung Data)
+            print("\n--- ⌚ DANE Z EKRANU ZEGARKA ---")
+            dane["TETNO"] = pobierz_input("Tętno spoczynkowe")
+            dane["ENERGIA_SCORE"] = pobierz_input("Energy Score (0-100)")
+            dane["SEN_H"] = pobierz_input("Długość snu (np. 7.5)")
+            dane["STRES_LVL"] = pobierz_input("Poziom stresu (0-100)")
+            dane["NASTROJ"] = pobierz_input("Nastrój (1-5)")
+            dane["STATUS"] = "MORNING_REPORT"
+            
+            # Analiza holistyczna
+            if dane["ENERGIA_SCORE"] != "-" and int(dane["ENERGIA_SCORE"]) < 50:
+                interfejs.send_alert("Niski poziom energii. Oszczędzaj zasoby.")
 
-    # 4. Zapis
-    with open(PLIK_PAMIECI, "a") as plik:
-        linia = f"{data_str},{godz_str},{faza},{tetno},{komunikat}\n"
-        plik.write(linia)
-        print("💾 Zapisano.")
+        elif wybor == "3": # LAB
+            print("\n--- 🩸 WYNIKI BADAŃ (Ręczne) ---")
+            dane["LAB_WIT_D3"] = pobierz_input("Witamina D3 (ng/ml)")
+            dane["LAB_KORTYZOL"] = pobierz_input("Kortyzol (µg/dL)")
+            dane["CUKIER"] = pobierz_input("Glukoza (mg/dL)")
+            dane["CISNIENIE"] = pobierz_input("Ciśnienie (np. 120/80)")
+            dane["STATUS"] = "LAB_ENTRY"
+            print("✅ Zarchiwizowano dane medyczne.")
 
-    time.sleep(1)
+        else:
+            continue
+
+        # ZAPIS DO PLIKU (Składanie linii CSV)
+        lista_wartosci = [str(dane[klucz]) for klucz in NAGLOWKI]
+        linia = ",".join(lista_wartosci) + "\n"
+        
+        with open(PLIK_PAMIECI, "a") as plik:
+            plik.write(linia)
+            print("💾 Zapisano w bazie ULTIMATE.")
+            
+    except Exception as e:
+        print(f"❌ BŁĄD SYSTEMU: {e}")
+        time.sleep(1)

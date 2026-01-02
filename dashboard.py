@@ -1,59 +1,73 @@
 # PLIK: dashboard.py
-# WERSJA 2.0: Analityka + Statystyki
+# WERSJA 3.0: Multi-Parametryczna
 
 import matplotlib.pyplot as plt
 import csv
-import statistics
 
-PLIK = "bio_history.csv"
+PLIK = "bio_history_ultimate.csv" # Nowa baza
 
-print("--- 📊 EXOMIND: RAPORT DZIENNY 📊 ---")
+print("--- 📊 EXOMIND ULTIMATE RAPORT 📊 ---")
 
 try:
     czasy = []
     tetna = []
-
+    energie = []
+    
     with open(PLIK, "r") as f:
         czytnik = csv.reader(f)
-        next(czytnik) # Pomiń nagłówek
+        try:
+            next(czytnik) # Pomiń nagłówek
+        except StopIteration:
+            pass
+
         for wiersz in czytnik:
-            if len(wiersz) >= 5 and wiersz[3].strip():
-                czasy.append(wiersz[1])       # Godzina
-                tetna.append(int(wiersz[3]))  # Tętno
+            # Sprawdzamy czy wiersz ma dane (indeks 3 to tętno, 5 to energia)
+            if len(wiersz) > 5:
+                # Tętno
+                t = wiersz[3]
+                e = wiersz[5]
+                
+                if t.isdigit():
+                    czasy.append(wiersz[1][:5]) # Tylko godzina:minuta
+                    tetna.append(int(t))
+                    
+                    # Energia (jeśli wpisana, inaczej 0)
+                    if e.isdigit():
+                        energie.append(int(e))
+                    else:
+                        energie.append(None) # Puste miejsce na wykresie
 
     if not tetna:
-        print("❌ Brak danych. Uruchom main.py!")
+        print("❌ Brak danych. Użyj main.py!")
         exit()
 
-    # --- DATA SCIENCE ---
-    srednie_tetno = statistics.mean(tetna)
-    max_tetno = max(tetna)
-    stres_punkty = sum(1 for t in tetna if t > 100)
-    stres_procent = (stres_punkty / len(tetna)) * 100
-
-    print(f"\n📈 STATYSTYKI:")
-    print(f"-> Pomiary: {len(tetna)}")
-    print(f"-> Średnia: {srednie_tetno:.1f} BPM")
-    print(f"-> Max:     {max_tetno} BPM")
-    print(f"-> Stres:   {stres_procent:.1f}% czasu")
-    
-    if stres_procent > 50:
-        print("\n⚠️ WERDYKT: DZIEŃ KRYTYCZNY.")
-    else:
-        print("\n✅ WERDYKT: STABILNIE.")
-
-    # --- WYKRES ---
+    # --- RYSOWANIE (Dwie osie Y) ---
     plt.style.use('dark_background')
-    plt.figure(figsize=(10, 6))
-    plt.plot(czasy, tetna, color='#00ff00', marker='o', label='BPM')
-    plt.axhline(y=100, color='red', linestyle='--', label='Granica Stresu')
-    plt.fill_between(czasy, 100, tetna, where=[t >= 100 for t in tetna], color='red', alpha=0.3)
+    fig, ax1 = plt.subplots(figsize=(10, 6))
 
-    plt.title(f"EXOMIND RAPORT (Avg: {int(srednie_tetno)} BPM)")
-    plt.xticks(rotation=45)
-    plt.legend()
-    plt.tight_layout()
+    # Oś 1: Tętno (Zielona)
+    ax1.set_xlabel('Czas')
+    ax1.set_ylabel('Tętno (BPM)', color='#00ff00')
+    ax1.plot(czasy, tetna, color='#00ff00', marker='o', label='Tętno')
+    ax1.tick_params(axis='y', labelcolor='#00ff00')
+    ax1.axhline(y=100, color='red', linestyle='--', alpha=0.5)
+
+    # Oś 2: Energia (Żółta) - Rysujemy tylko punkty, gdzie są dane
+    if any(energie):
+        ax2 = ax1.twinx()
+        ax2.set_ylabel('Energy Score (Samsung)', color='yellow')
+        # Filtrujemy None, żeby wykres się nie sypał
+        valid_indices = [i for i, v in enumerate(energie) if v is not None]
+        valid_czasy = [czasy[i] for i in valid_indices]
+        valid_energie = [energie[i] for i in valid_indices]
+        
+        ax2.plot(valid_czasy, valid_energie, color='yellow', marker='s', linestyle=':', label='Energy Score')
+        ax2.tick_params(axis='y', labelcolor='yellow')
+        ax2.set_ylim(0, 100)
+
+    plt.title("EXOMIND v3.0: Korelacja Stresu i Energii")
+    fig.tight_layout()
     plt.show()
 
 except FileNotFoundError:
-    print("❌ Nie znaleziono pliku bio_history.csv")
+    print(f"❌ Nie znaleziono bazy: {PLIK}")
