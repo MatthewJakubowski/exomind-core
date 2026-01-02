@@ -1,19 +1,21 @@
 # PLIK: main.py
 # SYSTEM EXOMIND v3.0 (ULTIMATE DATABASE)
+# Opis: Obsługa danych manualnych (Samsung Health + Lab)
 
 import time
 from datetime import datetime
 from actuators import BioInterface
 from cortex import Brain
 
-PLIK_PAMIECI = "bio_history_ultimate.csv" # Nowa, potężna baza
+# Nowa nazwa pliku bazy (żeby nie mieszać ze starym formatem)
+PLIK_PAMIECI = "bio_history_ultimate.csv"
 
 print("--- 🧬 EXOMIND v3.0 ULTIMATE ONLINE 🧬 ---")
 
 interfejs = BioInterface()
 mozg = Brain()
 
-# 1. DEFINICJA STRUKTURY DANYCH (Wszystkie parametry Samsunga + Lab)
+# DEFINICJA STRUKTURY DANYCH (16 Kolumn)
 NAGLOWKI = [
     "DATA", "GODZINA", "FAZA", "TETNO", "STATUS", 
     "ENERGIA_SCORE", "SEN_H", "STRES_LVL", "KROKI", 
@@ -21,7 +23,7 @@ NAGLOWKI = [
     "LAB_WIT_D3", "LAB_KORTYZOL", "SUPLEMENTACJA"
 ]
 
-# Tworzenie pliku z nowymi nagłówkami
+# Inicjalizacja pliku z nagłówkami
 try:
     with open(PLIK_PAMIECI, "x") as f:
         f.write(",".join(NAGLOWKI) + "\n")
@@ -44,17 +46,20 @@ while True:
     try:
         wybor = input("\n[WYBÓR] >> ")
         
-        if wybor == 'q': break
+        if wybor.lower() == 'q': 
+            print("Zamykanie systemu...")
+            break
         
-        # Zmienne tymczasowe (resetujemy je)
+        # Przygotowanie pustego wiersza danych
         dane = {k: "-" for k in NAGLOWKI}
         
-        # Czas
+        # Czas automatyczny
         teraz = datetime.now()
         dane["DATA"] = teraz.strftime("%Y-%m-%d")
         dane["GODZINA"] = teraz.strftime("%H:%M:%S")
         godzina = teraz.hour
         
+        # Faza dnia
         if 6 <= godzina < 12: faza = "MORNING"
         elif 12 <= godzina < 18: faza = "WORK"
         elif 18 <= godzina < 22: faza = "RECOVERY"
@@ -62,15 +67,16 @@ while True:
         dane["FAZA"] = faza
 
         # --- LOGIKA TRYBÓW ---
-        
         if wybor == "1": # SZYBKI
             t_str = input(">> Tętno (BPM): ")
             dane["TETNO"] = t_str
             # Szybka analiza Cortexe
             if t_str.isdigit():
-                _, rada = mozg.analizuj(int(t_str), faza)
-                print(f"💡 CORTEX: {rada}")
-                dane["STATUS"] = "QUICK_CHECK"
+                prefix, rada = mozg.analizuj(int(t_str), faza)
+                if prefix:
+                    print(f"💡 CORTEX: {rada}")
+                    interfejs.send_alert(rada)
+            dane["STATUS"] = "QUICK_CHECK"
 
         elif wybor == "2": # PORANNY (Samsung Data)
             print("\n--- ⌚ DANE Z EKRANU ZEGARKA ---")
@@ -82,8 +88,9 @@ while True:
             dane["STATUS"] = "MORNING_REPORT"
             
             # Analiza holistyczna
-            if dane["ENERGIA_SCORE"] != "-" and int(dane["ENERGIA_SCORE"]) < 50:
-                interfejs.send_alert("Niski poziom energii. Oszczędzaj zasoby.")
+            if dane["ENERGIA_SCORE"] != "-" and dane["ENERGIA_SCORE"].isdigit():
+                if int(dane["ENERGIA_SCORE"]) < 50:
+                    interfejs.send_alert("Niski poziom energii. Oszczędzaj zasoby.")
 
         elif wybor == "3": # LAB
             print("\n--- 🩸 WYNIKI BADAŃ (Ręczne) ---")
@@ -95,9 +102,10 @@ while True:
             print("✅ Zarchiwizowano dane medyczne.")
 
         else:
+            print("Nieznana opcja.")
             continue
 
-        # ZAPIS DO PLIKU (Składanie linii CSV)
+        # ZAPIS DO PLIKU
         lista_wartosci = [str(dane[klucz]) for klucz in NAGLOWKI]
         linia = ",".join(lista_wartosci) + "\n"
         

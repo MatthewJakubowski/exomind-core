@@ -10,12 +10,12 @@ class Brain:
         try:
             import google.generativeai as genai
             
-            # Bezpieczne pobieranie klucza (nie wpisuj go tu na sztywno!)
+            # Bezpieczne pobieranie klucza ze zmiennych środowiskowych
             self.api_key = os.getenv("GOOGLE_API_KEY") 
             
             if not self.api_key:
                 print("⚠️ INFO: Brak klucza API w zmiennych środowiskowych.")
-                print("-> Moduł działa w trybie pasywnym.")
+                print("-> Moduł działa w trybie pasywnym (Offline fallback).")
                 self.mode = "OFFLINE"
             else:
                 genai.configure(api_key=self.api_key)
@@ -28,9 +28,11 @@ class Brain:
             self.mode = "OFFLINE"
 
     def analizuj(self, tetno, faza):
+        # Fallback do trybu offline, jeśli brak klucza
         if self.mode == "OFFLINE":
             return "TRYB AWARYJNY", "AI niedostępne (Brak klucza/biblioteki)."
 
+        # Prompt inżynieryjny
         prompt = f"""
         Jesteś moim osobistym trenerem biometrycznym.
         Moje dane: Faza dnia: {faza}, Tętno: {tetno} BPM.
@@ -40,6 +42,7 @@ class Brain:
         
         try:
             response = self.model.generate_content(prompt)
+            # Zwracamy tuple (prefix, treść)
             return "AI_ADVICE", response.text.strip()
         except Exception:
             return "BŁĄD SIECI", "Nie udało się pobrać porady."
