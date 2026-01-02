@@ -67,3 +67,25 @@ This project was developed with the active assistance of Artificial Intelligence
 
 ---
 *Copyright © 2026 Mateusz Jakubowski | MIT License*
+---
+
+## ⚖️ CRITICAL DISCLAIMER / ŻELAZNA KLAUZULA ODPOWIEDZIALNOŚCI
+
+### 🇺🇸 English (Legal Binding)
+**THIS SOFTWARE IS NOT A MEDICAL DEVICE.**
+
+1.  **No Medical Advice:** The ExoMind system, including its algorithms (`cortex.py`) and AI integrations (`cortex_ai.py`), is provided solely for **educational, experimental, and bio-hacking purposes**. It is NOT intended to diagnose, treat, cure, or prevent any disease or health condition.
+2.  **Accuracy Warning:** Data collected via manual input or phone sensors (e.g., heart rate via camera) may be inaccurate. Never disregard professional medical advice or delay in seeking it because of something you have read on or calculated with this software.
+3.  **AI Hallucinations:** If the AI module (Gemini) is active, be aware that Large Language Models can hallucinate. They may generate health advice that is factually incorrect or dangerous.
+4.  **Use at Own Risk:** The author (Mateusz Jakubowski) and contributors accept **NO LIABILITY** for any injury, damage, or health complications resulting from the use of this code. By running `main.py`, you agree to take full responsibility for your bio-metric decisions.
+
+### 🇵🇱 Polski (Informacja)
+**TO OPROGRAMOWANIE NIE JEST WYROBEM MEDYCZNYM.**
+
+1.  **Brak Porad Medycznych:** System ExoMind służy wyłącznie celom **edukacyjnym i hobbystycznym (bio-hacking)**. Nie służy do diagnozowania ani leczenia chorób.
+2.  **Ostrzeżenie o Dokładności:** Pomiary i analizy generowane przez system mogą być błędne. Nigdy nie ignoruj profesjonalnej porady lekarskiej na podstawie sugestii tego programu.
+3.  **Ryzyko AI:** Moduły oparte na sztucznej inteligencji mogą generować fałszywe lub niebezpieczne porady ("halucynacje").
+4.  **Własne Ryzyko:** Autor nie ponosi żadnej odpowiedzialności za skutki zdrowotne wynikające z używania tego oprogramowania. Uruchamiając kod, działasz na własną odpowiedzialność.
+
+---
+*Copyright © 2026 Mateusz Jakubowski | MIT License*
