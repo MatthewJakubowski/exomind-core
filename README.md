@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="https://raw.githubusercontent.com/MatthewJakubowski/Universal-Lab-Converter/main/going_dark_cover.jpg" width="100%" alt="System Status: Going Dark. Deep Work Protocol.">
+</div>
+
 # 🧬 EXOMIND-CORE v3.0 Ultimate
 
 **Personal Biometric Assistant & Holistic Health Record (Android/Python)**
