@@ -2,90 +2,83 @@
   <img src="https://raw.githubusercontent.com/MatthewJakubowski/Universal-Lab-Converter/main/going_dark_cover.jpg" width="100%" alt="System Status: Going Dark. Deep Work Protocol.">
 </div>
 
-# 🧬 EXOMIND-CORE v3.0 Ultimate
+# 🧬 EXOMIND-CORE v4.0: Connected Omni-Tool
 
-**Personal Biometric Assistant & Holistic Health Record (Android/Python)**
+**The Ultimate Open-Source Biometric Assistant Framework (Python/Android)**
 
-ExoMind is a modular bio-feedback system designed for mobile devices running within the Pydroid 3 environment. Version 3.0 expands beyond simple heart rate monitoring to become a comprehensive, offline health database.
-
----
-
-## 🔥 v3.0: The "Ultimate" Update
-This version introduces a **Holistic Database** capable of tracking 20+ physiological parameters.
-
-### 🏥 Manual Health Bridge (Samsung Health / Lab Results)
-Due to Android security sandboxing, direct API access to Samsung Health is restricted for Python scripts.
-ExoMind v3.0 bypasses this via the **Manual Entry Protocol**:
-* **Morning Report:** Input Sleep Score, Energy Score, and HRV (from your watch).
-* **Lab Mode:** Archive blood test results (Vitamin D3, Cortisol, Glucose, etc.).
-* **Quick Check:** Standard Heart Rate monitoring.
-
-**All data remains 100% offline in a local CSV file (`bio_history_ultimate.csv`).**
+ExoMind v4.0 represents the evolution from a simple script to a comprehensive, modular framework. It allows users to track holistic health data, integrate with Artificial Intelligence, and control Smart Home devices—all from a secure, offline-first foundation running on Pydroid 3.
 
 ---
 
-## 🛡️ Architecture Philosophy: "Offline First"
+## 🏗️ Modular Architecture
 
-This project is built upon two core principles: **Data Security** and **Fault Tolerance**.
+The system is designed with a "Choose Your Adventure" philosophy. You decide which modules to activate based on your privacy needs and available hardware.
 
-### 1. Security & API Keys
-We do not expose sensitive API keys. By default, the system utilizes a local `cortex.py` (Expert System).
-* **AI Option:** For users with their own keys, a `cortex_ai.py` module is included (Gemini integration).
-
-### 2. Hardware Simulation (Virtual Actuator)
-We implemented an intelligent bridge: `actuators.py`.
-* **✅ Hardware Mode:** If `android-helper` library is found – the phone vibrates/speaks.
-* **⚠️ Virtual Mode:** If missing – the system transitions to text simulation.
-
----
-
-## 📂 System Structure
-
-* **`main.py`** – **[UPDATED]** Core logic now supports multi-parameter data entry (Energy, Stress, Lab results).
-* **`dashboard.py`** – **[UPDATED]** Analytics module now visualizes correlations (e.g., Heart Rate vs. Energy Score).
-* **`actuators.py`** – Nervous System (Hybrid driver).
-* **`cortex.py`** – Local knowledge base.
-* **`bio_history_ultimate.csv`** – The expanded database file.
+| Module | Filename | Status | Function |
+| :--- | :--- | :--- | :--- |
+| **CORE** | `main.py` | ✅ Active | Central logic, time loops, manual data entry. |
+| **BIO-DB** | `bio_history_ultimate.csv` | ✅ Active | Encrypted-like local storage for 20+ health metrics. |
+| **VISUAL** | `dashboard.py` | ✅ Active | Data analytics & Dual-Axis charting. |
+| **HAPTICS**| `actuators.py` | 🔄 Hybrid | Hardware vibration (if available) or Virtual Simulation. |
+| **AI** | `cortex_ai.py` | ⏸️ Optional | Google Gemini LLM Integration (Requires API Key). |
+| **IoT** | `smarthome.py` | ⏸️ Optional | Samsung SmartThings Bridge (Requires Token). |
 
 ---
 
-## 🚀 Usage Instructions
+## 🚀 EXPANSION PACKS (How-To Guide)
 
-1.  Open `main.py` in Pydroid 3.
-2.  Choose your mode:
-    * `1` - Quick Heart Rate Check.
-    * `2` - Morning Report (Samsung Health Data).
-    * `3` - Lab Results Entry.
-3.  To view the charts, run `dashboard.py`.
+### 📦 Pack A: Holistic Health (Standard)
+*No internet required. Privacy: 100%.*
+The v4.0 Core allows for the manual bridging of data from closed ecosystems (Samsung Health, Garmin) into your open Python database.
+1.  Run `main.py`.
+2.  Select **Option 2 (Morning Report)** to log Sleep Score, Energy Score, and HRV.
+3.  Select **Option 3 (Lab Results)** to archive blood work (Vitamin D3, Cortisol, etc.).
+4.  Run `dashboard.py` to see correlations (e.g., *Does low sleep correlate with high heart rate?*).
+
+### 🧠 Pack B: Artificial Intelligence (Gemini)
+*Requires Internet. Privacy: Cloud-based.*
+Unlocks a psych-physio coach that analyzes your data and gives advice.
+1.  Get an API Key from [Google AI Studio](https://aistudio.google.com/).
+2.  In `main.py`, switch imports:
+    ```python
+    # from cortex import Brain       <-- Comment this out
+    from cortex_ai import Brain    <-- Uncomment this
+    ```
+3.  Set your key in environment variables (or secure storage).
+4.  Restart. The system now "thinks" before speaking.
+
+### 🏠 Pack C: Smart Home Automation (IoT)
+*Requires Internet + Samsung Account.*
+Connects your biology to your environment (e.g., dim lights when stress is high).
+1.  Get a Personal Access Token from [Samsung SmartThings](https://account.smartthings.com/tokens).
+2.  Open `smarthome.py` and input your token (securely).
+3.  Run the script directly to **Scan your network** and get Device IDs.
+4.  (Advanced) Import `SmartHomeHub` into `main.py` to trigger actions based on heart rate:
+    ```python
+    if stress_detected:
+        hub.control_device(LIGHT_ID, "switch", "off")
+    ```
+
+---
+
+## 🛡️ Ironclad Disclaimer & Liability
+
+### 🇺🇸 English (Legal Binding)
+**THIS SOFTWARE IS NOT A MEDICAL DEVICE.**
+1.  **No Medical Advice:** The ExoMind system is provided solely for **educational, experimental, and bio-hacking purposes**. It is NOT intended to diagnose, treat, cure, or prevent any disease.
+2.  **Accuracy Warning:** Data collected via manual input or phone sensors may be inaccurate.
+3.  **AI Hallucinations:** AI modules may generate incorrect or dangerous health advice.
+4.  **Use at Own Risk:** The author (Mateusz Jakubowski) accepts **NO LIABILITY** for any injury or damage resulting from the use of this code.
+
+### 🇵🇱 Polski (Informacja)
+**TO OPROGRAMOWANIE NIE JEST WYROBEM MEDYCZNYM.**
+System służy wyłącznie celom edukacyjnym. Autor nie ponosi odpowiedzialności za decyzje zdrowotne podejmowane na podstawie działania programu. Moduły AI i IoT używasz na własną odpowiedzialność.
 
 ---
 
 ## 🤝 Acknowledgments
-
 **Co-architected with Google Gemini.**
-This project was developed with the active assistance of Artificial Intelligence, acting as a technical thought partner in designing the modular architecture and the manual data bridging protocol.
-
----
-*Copyright © 2026 Mateusz Jakubowski | MIT License*
----
-
-## ⚖️ CRITICAL DISCLAIMER / ŻELAZNA KLAUZULA ODPOWIEDZIALNOŚCI
-
-### 🇺🇸 English (Legal Binding)
-**THIS SOFTWARE IS NOT A MEDICAL DEVICE.**
-
-1.  **No Medical Advice:** The ExoMind system, including its algorithms (`cortex.py`) and AI integrations (`cortex_ai.py`), is provided solely for **educational, experimental, and bio-hacking purposes**. It is NOT intended to diagnose, treat, cure, or prevent any disease or health condition.
-2.  **Accuracy Warning:** Data collected via manual input or phone sensors (e.g., heart rate via camera) may be inaccurate. Never disregard professional medical advice or delay in seeking it because of something you have read on or calculated with this software.
-3.  **AI Hallucinations:** If the AI module (Gemini) is active, be aware that Large Language Models can hallucinate. They may generate health advice that is factually incorrect or dangerous.
-4.  **Use at Own Risk:** The author (Mateusz Jakubowski) and contributors accept **NO LIABILITY** for any injury, damage, or health complications resulting from the use of this code. By running `main.py`, you agree to take full responsibility for your bio-metric decisions.
-
-### 🇵🇱 Polski (Informacja)
-**TO OPROGRAMOWANIE NIE JEST WYROBEM MEDYCZNYM.**
-
-1.  **Brak Porad Medycznych:** System ExoMind służy wyłącznie celom **edukacyjnym i hobbystycznym (bio-hacking)**. Nie służy do diagnozowania ani leczenia chorób.
-2.  **Ostrzeżenie o Dokładności:** Pomiary i analizy generowane przez system mogą być błędne. Nigdy nie ignoruj profesjonalnej porady lekarskiej na podstawie sugestii tego programu.
-3.  **Ryzyko AI:** Moduły oparte na sztucznej inteligencji mogą generować fałszywe lub niebezpieczne porady ("halucynacje").
-4.  **Własne Ryzyko:** Autor nie ponosi żadnej odpowiedzialności za skutki zdrowotne wynikające z używania tego oprogramowania. Uruchamiając kod, działasz na własną odpowiedzialność.
+Developed with the active assistance of AI, serving as a technical thought partner in designing the modular architecture, virtual actuators, and the "Manual Bridge" data protocol.
 
 ---
 *Copyright © 2026 Mateusz Jakubowski | MIT License*
